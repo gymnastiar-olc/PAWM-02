@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+
+<!-- Dictionary Widget -->
+<div class="dictionary-widget">
+    <h4>Curious About a Word?</h4>
+    <input type="text" id="inp-word" placeholder="Type a word" />
+    <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+    <div id="result"></div>
+</div>
+
+<div class="container mt-5">
+  <div class="jumbotron text-center hero-section"
+    <img src="/assets/shield-key-icon.png" alt="Key Icon" class="icon-highlight">
+    <h1 class="display-3">Share The Story Below</h1>
+    <p class="secret-text">Share It Anonymously!</p>
+    <form action="/submit" method="POST">
+      <div class="form-group">
+        <input type="text" class="form-control text-center" name="secret" placeholder="What's the secret?">
+      </div>
+      <button type="submit" class="btn btn-dark btn-lg">Submit</button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script>
+    const url = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+    const result = document.getElementById("result");
+    const btn = document.getElementById("search-btn");
+
+    btn.addEventListener("click", () => {
+        let inpWord = document.getElementById("inp-word").value;
+        fetch(`${url}${inpWord}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Word not found");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                result.innerHTML = `
+                <div class="word"><h3>${inpWord}</h3></div>
+                <div class="details"><p>${data[0].meanings[0].partOfSpeech}</p><p>/${data[0].phonetic || ""}/</p></div>
+                <p class="word-meaning">${data[0].meanings[0].definitions[0].definition}</p>
+                <p class="word-example">${data[0].meanings[0].definitions[0].example || ""}</p>`;
+            })
+            .catch((error) => {
+                result.innerHTML = `<h3 class="error">Couldn't Find The Word</h3>`;
+                console.error("Error:", error);
+            });
+    });
+</script>
